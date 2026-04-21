@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:\\\\Users\\\\Pavilion27\\\\Documents\\\\Krunika\\\\trytripnexa-web\\\\components:*)",
+      "Bash(cp \"C:/Users/Pavilion27/Documents/Krunika/images/dwarka-chardham-temple-gujarat.jpg\" \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/dwarka.jpg\")",
+      "Bash(cp \"C:/Users/Pavilion27/Documents/Krunika/images/Gir.avif\" \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/gir.avif\")",
+      "Bash(cp \"C:/Users/Pavilion27/Documents/Krunika/images/somnath img.jfif\" \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/somnath.jpg\")",
+      "Bash(cp \"C:/Users/Pavilion27/Documents/Krunika/images/sou.jfif\" \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/sou.jpg\")",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "Bash(curl -L -o \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/statue-of-unity.jpg\" \"https://upload.wikimedia.org/wikipedia/commons/0/07/Statue_of_Unity.jpg\" --progress-bar)",
+      "Bash(curl -L -o \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/somnath-temple.jpg\" \"https://upload.wikimedia.org/wikipedia/commons/d/d7/Somanath_mandir.jpg\" --progress-bar)"
+    ]
+  }
+}

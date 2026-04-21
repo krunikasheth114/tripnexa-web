@@ -1,0 +1,2 @@
+- [Homepage Structure](project_homepage_structure.md) — Component tree and file layout for the TripNexa homepage
+- [About Page Structure](project_about_page.md) — Section layout, design decisions, and file location for app/about/page.tsx
