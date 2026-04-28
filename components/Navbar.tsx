@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const navLinks = [
   { label: "Destination", href: "/" },
-  { label: "Hotels", href: "", comingSoon: true },
+  { label: "Stays", href: "", comingSoon: true },
   { label: "Car Rental", href: "", comingSoon: true },
 ];
 

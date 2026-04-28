@@ -88,12 +88,11 @@ export default function HeroSection() {
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-          Explore Gujarat the Nexa Way
+         Explore Gujarat the Nexa Way
         </h1>
 
         <p className="text-lg md:text-xl text-gray-300 font-medium mt-4 max-w-2xl">
-          From the shimmering Rann to the roar of Gir — discover Gujarat&apos;s
-          soul.
+        Explore the land of heritage, devotion, and adventure — crafted travel packages across Gujarat.        
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -101,13 +100,13 @@ export default function HeroSection() {
             href="#destinations"
             className="bg-[#28536B] text-white px-6 py-3 rounded-[8px] font-semibold hover:bg-[#1e3f52] transition-colors duration-200"
           >
-            Start Exploring
+            Start Your Journey
           </a>
           <a
             href="#destinations"
             className="border-2 border-white text-white px-6 py-3 rounded-[8px] font-semibold hover:bg-white hover:text-[#28536B] transition-all duration-200"
           >
-            View Destinations
+            View Packages
           </a>
         </div>
       </div>

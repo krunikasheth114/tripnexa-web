@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { Destination, ItineraryPlan } from "@/utils/mockData";
+import type { Destination, ItineraryPlan } from "@/features/destinations/types";
 
 interface DestinationItineraryExplorerProps {
   destination: Destination;

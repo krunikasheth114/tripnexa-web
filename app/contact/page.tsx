@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactForm from "@/components/ContactForm";
-import { heroImage } from "@/utils/mockData";
+import ContactForm from "@/features/contact/components/ContactForm";
+import { heroImage } from "@/features/destinations/data";
 
 export const metadata: Metadata = {
   title: "Contact Us - TripNexa",

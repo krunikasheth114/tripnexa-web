@@ -8,7 +8,14 @@
       "Bash(cp \"C:/Users/Pavilion27/Documents/Krunika/images/sou.jfif\" \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/sou.jpg\")",
       "WebFetch(domain:commons.wikimedia.org)",
       "Bash(curl -L -o \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/statue-of-unity.jpg\" \"https://upload.wikimedia.org/wikipedia/commons/0/07/Statue_of_Unity.jpg\" --progress-bar)",
-      "Bash(curl -L -o \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/somnath-temple.jpg\" \"https://upload.wikimedia.org/wikipedia/commons/d/d7/Somanath_mandir.jpg\" --progress-bar)"
+      "Bash(curl -L -o \"C:/Users/Pavilion27/Documents/Krunika/trytripnexa-web/public/hero/somnath-temple.jpg\" \"https://upload.wikimedia.org/wikipedia/commons/d/d7/Somanath_mandir.jpg\" --progress-bar)",
+      "Bash(npx tsc *)",
+      "Bash(tree -L 3 /c/Users/Pavilion27/Documents/Krunika/trytripnexa-web --ignore node_modules --ignore .next)",
+      "Bash(grep -E '\\\\.\\(tsx|ts|css|json|md\\)$')",
+      "Bash(curl -s http://localhost:5000/destinations)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(d['slug'], '|', d['name'], '|', d['type']\\) for d in data['data']]\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); j.data.forEach\\(x=>console.log\\(x.slug, '|', x.name, '|', x.type\\)\\)\")",
+      "Bash(curl -s \"http://localhost:5000/destinations\")"
     ]
   }
 }

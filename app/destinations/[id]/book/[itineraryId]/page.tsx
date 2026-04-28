@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import BookingHeroGallery from "@/components/BookingHeroGallery";
+import BookingHeroGallery from "@/features/destinations/components/BookingHeroGallery";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
@@ -9,7 +9,7 @@ import {
   getDestinationById,
   getDestinationGallery,
   getItineraryById,
-} from "@/utils/mockData";
+} from "@/features/destinations/data";
 
 type BookingPageProps = {
   params: Promise<{ id: string; itineraryId: string }>;

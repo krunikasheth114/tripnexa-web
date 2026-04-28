@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import type { DestinationGalleryImage } from "@/utils/mockData";
+import type { DestinationGalleryImage } from "@/features/destinations/types";
 
 interface BookingHeroGalleryProps {
   destinationName: string;

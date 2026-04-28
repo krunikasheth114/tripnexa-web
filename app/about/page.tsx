@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "About — TripNexa",
   description:
-    "Learn about TripNexa, our mission, vision, and our promise to make every journey simple, smart, and stress-free.",
+    "Learn about TripNexa, Gujarat's trusted travel platform for seamless, memorable, and stress-free journeys.",
 };
 
 /** Inline SVG icons used in the "What We Do" feature cards */
@@ -251,8 +251,9 @@ export default function AboutPage() {
                 Our Vision
               </h3>
               <p className="text-gray-600 text-lg leading-relaxed">
-                To become a trusted, next-generation travel platform that makes
-                every journey simple, smart, and stress-free for everyone.
+                To become Gujarat&apos;s most trusted travel platform that
+                transforms journeys into seamless, memorable, and stress-free
+                experiences.
               </p>
             </article>
 
@@ -262,9 +263,9 @@ export default function AboutPage() {
                 Our Mission
               </h3>
               <p className="text-white text-lg leading-relaxed">
-                To use technology and personalized support to simplify travel
-                planning, provide transparent and reliable experiences, and
-                empower people to explore the world with confidence.
+                To simplify travel by combining smart technology with human
+                support, delivering transparent, well-planned, and hassle-free
+                travel experiences from start to finish.
               </p>
             </article>
           </div>

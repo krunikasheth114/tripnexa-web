@@ -1,24 +1,18 @@
-"use client";
-
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
-import CategoryFilter from "@/components/CategoryFilter";
-import DestinationsSection from "@/components/DestinationsSection";
 import Footer from "@/components/Footer";
+import HeroSection from "@/features/home/components/HeroSection";
+import SeasonalPicksSection from "@/features/home/components/SeasonalPicksSection";
+import CategoryFilter from "@/features/destinations/components/CategoryFilter";
+import DestinationsSection from "@/features/destinations/components/DestinationsSection";
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState("All");
-
   return (
-    <main className="min-h-screen bg-[#FAFAF8]">
+    <main className="min-h-screen bg-brand-bg">
       <Navbar />
       <HeroSection />
-      <CategoryFilter
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
-      />
-      <DestinationsSection activeCategory={activeCategory} />
+      {/* <CategoryFilter /> */}
+      <DestinationsSection />
+      <SeasonalPicksSection />
       <Footer />
     </main>
   );

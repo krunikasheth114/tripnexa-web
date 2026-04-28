@@ -3,12 +3,12 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DestinationItineraryExplorer from "@/components/DestinationItineraryExplorer";
+import DestinationItineraryExplorer from "@/features/destinations/components/DestinationItineraryExplorer";
 import {
   destinations,
   getDestinationById,
   getItinerariesByDestination,
-} from "@/utils/mockData";
+} from "@/features/destinations/data";
 
 type DestinationPageProps = {
   params: Promise<{ id: string }>;
