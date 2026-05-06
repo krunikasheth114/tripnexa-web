@@ -3,48 +3,43 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DestinationItineraryExplorer from "@/features/destinations/components/DestinationItineraryExplorer";
-import {
-  destinations,
-  getDestinationById,
-  getItinerariesByDestination,
-} from "@/features/destinations/data";
+import DestinationItineraryExplorer from "@/app/destinations/components/DestinationItineraryExplorer";
+import { getDestinationPageData } from "@/services/destinations";
 
 type DestinationPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export function generateStaticParams() {
-  return destinations.map((destination) => ({ id: destination.id }));
-}
-
 export async function generateMetadata(
   props: DestinationPageProps
 ): Promise<Metadata> {
   const { id } = await props.params;
-  const destination = getDestinationById(id);
+  const pageData = await getDestinationPageData(id);
 
-  if (!destination) {
+  if (!pageData) {
     return {
       title: "Destination Not Found - TripNexa",
     };
   }
 
   return {
-    title: `${destination.name} Itineraries - TripNexa`,
-    description: `Explore 2-day, 5-day, and 1-week itinerary options for ${destination.name} with multiple budget ranges.`,
+    title: `${pageData.destination.name} Packages - TripNexa`,
+    description: `Explore available travel packages for ${pageData.destination.name} with multiple budget ranges.`,
   };
 }
 
-export default async function DestinationDetailsPage(props: DestinationPageProps) {
+export default async function DestinationDetailsPage(
+  props: DestinationPageProps
+) {
   const { id } = await props.params;
-  const destination = getDestinationById(id);
+  const pageData = await getDestinationPageData(id);
+  console.log("pageData",pageData);
 
-  if (!destination) {
+  if (!pageData) {
     notFound();
   }
 
-  const itineraries = getItinerariesByDestination(id);
+  const { destination, itineraries } = pageData;
 
   return (
     <main className="min-h-screen bg-[#FAFAF8]">

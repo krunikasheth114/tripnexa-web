@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import type { DestinationGalleryImage } from "@/features/destinations/types";
+import type { DestinationGalleryImage } from "@/services/destinations";
 
 interface BookingHeroGalleryProps {
   destinationName: string;
@@ -14,7 +14,6 @@ export default function BookingHeroGallery({
   images,
 }: BookingHeroGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
   const visibleImages = images.slice(0, 5);
   const extraCount = Math.max(images.length - visibleImages.length, 0);
 
@@ -26,7 +25,6 @@ export default function BookingHeroGallery({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setActiveIndex(null);
-        return;
       }
 
       if (event.key === "ArrowRight") {
@@ -37,7 +35,9 @@ export default function BookingHeroGallery({
 
       if (event.key === "ArrowLeft") {
         setActiveIndex((current) =>
-          current === null ? images.length - 1 : (current - 1 + images.length) % images.length
+          current === null
+            ? images.length - 1
+            : (current - 1 + images.length) % images.length
         );
       }
     };
@@ -115,12 +115,18 @@ export default function BookingHeroGallery({
                     {isOverlayCard ? (
                       <>
                         <p className="text-lg font-semibold text-white">
-                          {extraCount > 0 ? `+${extraCount} Photos` : "View All Photos"}
+                          {extraCount > 0
+                            ? `+${extraCount} Photos`
+                            : "View All Photos"}
                         </p>
-                        <p className="mt-1 text-sm text-white/78">Open full gallery</p>
+                        <p className="mt-1 text-sm text-white/78">
+                          Open full gallery
+                        </p>
                       </>
                     ) : (
-                      <p className="text-sm font-medium text-white">{image.label}</p>
+                      <p className="text-sm font-medium text-white">
+                        {image.label}
+                      </p>
                     )}
                   </div>
                 </button>
@@ -193,7 +199,9 @@ export default function BookingHeroGallery({
               <button
                 type="button"
                 onClick={() =>
-                  setActiveIndex((activeIndex - 1 + images.length) % images.length)
+                  setActiveIndex(
+                    (activeIndex - 1 + images.length) % images.length
+                  )
                 }
                 className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-4 py-3 text-sm font-semibold text-white transition hover:bg-black/70"
               >

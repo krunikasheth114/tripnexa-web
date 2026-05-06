@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import BookingHeroGallery from "@/features/destinations/components/BookingHeroGallery";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import {
-  destinations,
-  getDestinationById,
-  getDestinationGallery,
-  getItineraryById,
-} from "@/features/destinations/data";
+import BookingHeroGallery from "@/app/destinations/components/BookingHeroGallery";
+import { getBookingPageData } from "@/services/destinations";
 
-type BookingPageProps = {
+type BookingRouteProps = {
   params: Promise<{ id: string; itineraryId: string }>;
 };
 
@@ -19,44 +14,33 @@ function formatInr(value: number): string {
   return `INR ${value.toLocaleString("en-IN")}`;
 }
 
-export function generateStaticParams() {
-  return destinations.flatMap((destination) =>
-    ["2d-1n", "5d-4n", "7d-6n"].map((durationSlug) => ({
-      id: destination.id,
-      itineraryId: `${destination.id}-${durationSlug}`,
-    }))
-  );
-}
-
 export async function generateMetadata(
-  props: BookingPageProps
+  props: BookingRouteProps
 ): Promise<Metadata> {
   const { id, itineraryId } = await props.params;
-  const destination = getDestinationById(id);
-  const itinerary = getItineraryById(id, itineraryId);
+  const pageData = await getBookingPageData(id, itineraryId);
 
-  if (!destination || !itinerary) {
+  if (!pageData) {
     return {
       title: "Booking Not Found - TripNexa",
     };
   }
 
   return {
-    title: `${destination.name} ${itinerary.title} Booking - TripNexa`,
-    description: `Review the ${itinerary.duration} ${destination.name} itinerary, timeline, and payment options before checkout.`,
+    title: `${pageData.destination.name} ${pageData.itinerary.title} Booking - TripNexa`,
+    description: `Review the ${pageData.itinerary.duration} ${pageData.destination.name} itinerary, timeline, and payment options before checkout.`,
   };
 }
 
-export default async function BookingPage(props: BookingPageProps) {
+export default async function BookingPage(props: BookingRouteProps) {
   const { id, itineraryId } = await props.params;
-  const destination = getDestinationById(id);
-  const itinerary = getItineraryById(id, itineraryId);
-  const galleryImages = getDestinationGallery(id);
+  const pageData = await getBookingPageData(id, itineraryId);
 
-  if (!destination || !itinerary) {
+  if (!pageData) {
     notFound();
   }
 
+  const { destination, itinerary, galleryImages } = pageData;
   const platformFee = 499;
   const taxes = Math.round(itinerary.totalPrice * 0.05);
   const payableNow = itinerary.totalPrice + platformFee + taxes;
@@ -138,7 +122,8 @@ export default async function BookingPage(props: BookingPageProps) {
                   </h2>
                 </div>
                 <p className="max-w-xl text-sm text-[#52636F]">
-                  A simple day-wise flow so travelers know exactly how the journey unfolds before payment.
+                  A simple day-wise flow so travelers know exactly how the
+                  journey unfolds before payment.
                 </p>
               </div>
 
@@ -198,7 +183,8 @@ export default async function BookingPage(props: BookingPageProps) {
               Proceed to payment
             </h2>
             <p className="mt-3 text-sm leading-6 text-[#52636F]">
-              Review the amount below and continue with your preferred payment method.
+              Review the amount below and continue with your preferred payment
+              method.
             </p>
 
             <div className="mt-6 rounded-[18px] bg-[#F8F5F0] p-5">
@@ -232,7 +218,9 @@ export default async function BookingPage(props: BookingPageProps) {
                   key={option}
                   className="flex items-center justify-between rounded-[14px] border border-[#EAE2D8] px-4 py-3"
                 >
-                  <span className="text-sm font-medium text-[#0A1E2A]">{option}</span>
+                  <span className="text-sm font-medium text-[#0A1E2A]">
+                    {option}
+                  </span>
                   <span className="rounded-full bg-[#EAF1F5] px-2.5 py-1 text-xs font-semibold text-[#28536B]">
                     Available
                   </span>
@@ -248,7 +236,8 @@ export default async function BookingPage(props: BookingPageProps) {
             </button>
 
             <p className="mt-3 text-center text-xs leading-5 text-[#7A8892]">
-              Secure checkout preview. Payment gateway integration can be connected next.
+              Secure checkout preview. Payment gateway integration can be
+              connected next.
             </p>
           </aside>
         </div>

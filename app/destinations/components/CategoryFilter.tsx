@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchDestinations, type ApiDestination } from "@/services/destinations";
 
@@ -18,13 +18,15 @@ export default function CategoryFilter() {
   const canGoPrev = startIndex > 0;
   const canGoNext = startIndex + VISIBLE < destinations.length;
 
-  const goPrev = () => setStartIndex((i) => Math.max(i - 1, 0));
+  const goPrev = () => setStartIndex((index) => Math.max(index - 1, 0));
   const goNext = () =>
-    setStartIndex((i) => Math.min(i + 1, destinations.length - VISIBLE));
+    setStartIndex((index) => Math.min(index + 1, destinations.length - VISIBLE));
 
   const visible = destinations.slice(startIndex, startIndex + VISIBLE);
 
-  if (destinations.length === 0) return null;
+  if (destinations.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative z-10 flex justify-center -mt-8 px-6">
@@ -33,7 +35,6 @@ export default function CategoryFilter() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Prev */}
         <div
           className={`overflow-hidden transition-all duration-300 ${
             isHovered ? "w-9 mr-2" : "w-0 mr-0"
@@ -65,20 +66,18 @@ export default function CategoryFilter() {
           </button>
         </div>
 
-        {/* Pills */}
         <div className="flex gap-2 flex-1">
-          {visible.map((dest) => (
+          {visible.map((destination) => (
             <Link
-              key={dest.slug}
-              href={`/destinations/${dest.slug}`}
+              key={destination.slug}
+              href={`/destinations/${destination.id}`}
               className="flex-1 px-3 py-2 rounded-[8px] text-sm font-medium whitespace-nowrap text-center border border-gray-200 text-gray-600 hover:border-[#28536B] hover:text-[#28536B] transition-all duration-200"
             >
-              {dest.name}
+              {destination.name}
             </Link>
           ))}
         </div>
 
-        {/* Next */}
         <div
           className={`overflow-hidden transition-all duration-300 ${
             isHovered ? "w-9 ml-2" : "w-0 ml-0"

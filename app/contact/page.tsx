@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactForm from "@/features/contact/components/ContactForm";
-import { heroImage } from "@/features/destinations/data";
+import ContactForm from "@/app/contact/_components/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us - TripNexa",
@@ -23,6 +22,8 @@ const quickDetails = [
   { label: "Primary Email", value: "hello@tripnexa.com" },
 ];
 
+const contactHeroImage = "/hero/gujarat-hero.jpg";
+
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#FAFAF8]">
@@ -31,7 +32,7 @@ export default function ContactPage() {
       <section className="relative isolate overflow-visible">
         <div className="relative min-h-[520px]">
           <Image
-            src={heroImage}
+            src={contactHeroImage}
             alt="Scenic landscape inspiring your next Gujarat trip"
             fill
             priority
