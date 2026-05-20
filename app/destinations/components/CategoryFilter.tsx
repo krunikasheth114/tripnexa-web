@@ -47,7 +47,7 @@ export default function CategoryFilter() {
             aria-label="Previous"
             className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors duration-200 ${
               canGoPrev
-                ? "border-gray-200 text-[#28536B] hover:bg-[#28536B] hover:text-white hover:border-[#28536B]"
+                ? "border-gray-200 text-orange-500 hover:bg-orange-500 hover:text-white hover:border-orange-500"
                 : "border-gray-100 text-gray-300 cursor-not-allowed"
             }`}
           >
@@ -71,7 +71,7 @@ export default function CategoryFilter() {
             <Link
               key={destination.slug}
               href={`/destinations/${destination.id}`}
-              className="flex-1 px-3 py-2 rounded-[8px] text-sm font-medium whitespace-nowrap text-center border border-gray-200 text-gray-600 hover:border-[#28536B] hover:text-[#28536B] transition-all duration-200"
+              className="flex-1 px-3 py-2 rounded-[8px] text-sm font-medium whitespace-nowrap text-center border border-gray-200 text-gray-600 hover:border-orange-500 hover:text-orange-600 transition-all duration-200"
             >
               {destination.name}
             </Link>
@@ -90,7 +90,7 @@ export default function CategoryFilter() {
             aria-label="Next"
             className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors duration-200 ${
               canGoNext
-                ? "border-gray-200 text-[#28536B] hover:bg-[#28536B] hover:text-white hover:border-[#28536B]"
+                ? "border-gray-200 text-orange-500 hover:bg-orange-500 hover:text-white hover:border-orange-500"
                 : "border-gray-100 text-gray-300 cursor-not-allowed"
             }`}
           >

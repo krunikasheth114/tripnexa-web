@@ -15,7 +15,15 @@
       "Bash(curl -s http://localhost:5000/destinations)",
       "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(d['slug'], '|', d['name'], '|', d['type']\\) for d in data['data']]\")",
       "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); j.data.forEach\\(x=>console.log\\(x.slug, '|', x.name, '|', x.type\\)\\)\")",
-      "Bash(curl -s \"http://localhost:5000/destinations\")"
+      "Bash(curl -s \"http://localhost:5000/destinations\")",
+      "Bash(npx shadcn@latest init --yes -d)",
+      "Bash(mkdir -p src/components/ui src/lib)",
+      "Bash(cp -r \"@/components/ui/.\" src/components/ui/)",
+      "Bash(rm -rf \"@\")",
+      "Bash(npx shadcn@latest add table sheet dialog select textarea sonner --yes)",
+      "Bash(node -e \"require\\('./node_modules/xlsx'\\); console.log\\('found'\\);\")",
+      "Bash(node -e \"const xlsx = require\\('./node_modules/xlsx'\\); console.log\\(Object.keys\\(xlsx\\).slice\\(0,5\\)\\);\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

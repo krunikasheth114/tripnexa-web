@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#28536B] text-white">
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand / About */}
@@ -29,7 +29,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-widest text-[#C2948A] mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-widest text-orange-400 mb-4">
               Quick Links
             </h3>
             <ul className="space-y-3">
@@ -54,7 +54,7 @@ export default function Footer() {
 
           {/* Office Address */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-widest text-[#C2948A] mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-widest text-orange-400 mb-4">
               Office Address
             </h3>
             <address className="not-italic text-white/70 text-sm leading-relaxed space-y-3">
@@ -92,7 +92,7 @@ export default function Footer() {
 
           {/* Connect */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-widest text-[#C2948A] mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-widest text-orange-400 mb-4">
               Connect With Us
             </h3>
             <div className="flex gap-3 mb-6">
@@ -129,7 +129,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-[8px] bg-white/10 flex items-center justify-center hover:bg-[#C2948A] transition-colors duration-200"
+                  className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-orange-500 transition-colors duration-200"
                 >
                   {social.icon}
                 </a>

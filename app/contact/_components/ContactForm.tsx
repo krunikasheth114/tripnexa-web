@@ -32,38 +32,38 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="rounded-[24px] bg-white p-6 shadow-[0_30px_90px_rgba(40,83,107,0.18)] sm:p-8">
+    <div>
       <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[#C2948A]">
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-orange-500">
           Contact Us
         </p>
-        <h2 className="mt-3 text-3xl font-bold text-[#28536B]">
+        <h2 className="mt-3 text-3xl font-bold text-gray-900">
           Share your support query
         </h2>
-        <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
+        <p className="mt-3 max-w-xl text-sm leading-7 text-gray-500 sm:text-base">
           For E-Tickets, cancellations, and refund status, use Manage My
           Bookings on our Customer Support page. For other assistance, submit
-          your query here or call 0124-6280407.
+          your query here or call +91 98765 43210.
         </p>
       </div>
 
       {isSubmitted ? (
-        <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
           Thanks for contacting us. Our Customer Support Team has received your
-          query. For urgent help, call 0124-6280407.
+          query. For urgent help, call +91 98765 43210.
         </div>
       ) : null}
 
       <form className="mt-6 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-700">
+            <span className="mb-2 block text-sm font-medium text-gray-700">
               Name
             </span>
             <input
               type="text"
               placeholder="Enter your full name"
-              className="w-full rounded-[14px] border border-slate-200 bg-[#FAFAF8] px-4 py-3 text-slate-800 outline-none transition focus:border-[#28536B] focus:bg-white"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100"
               {...register("name", {
                 required: "Please enter your name.",
                 minLength: {
@@ -80,13 +80,13 @@ export default function ContactForm() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-700">
+            <span className="mb-2 block text-sm font-medium text-gray-700">
               Email
             </span>
             <input
               type="email"
               placeholder="Enter your email address"
-              className="w-full rounded-[14px] border border-slate-200 bg-[#FAFAF8] px-4 py-3 text-slate-800 outline-none transition focus:border-[#28536B] focus:bg-white"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100"
               {...register("email", {
                 required: "Please enter your email address.",
                 pattern: {
@@ -104,13 +104,13 @@ export default function ContactForm() {
         </div>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-slate-700">
+          <span className="mb-2 block text-sm font-medium text-gray-700">
             Message
           </span>
           <textarea
             rows={6}
             placeholder="Write your query with booking details or reference ID if available."
-            className="w-full resize-none rounded-[14px] border border-slate-200 bg-[#FAFAF8] px-4 py-3 text-slate-800 outline-none transition focus:border-[#28536B] focus:bg-white"
+            className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100"
             {...register("message", {
               required: "Please add a short message.",
               minLength: {
@@ -126,14 +126,14 @@ export default function ContactForm() {
           ) : null}
         </label>
 
-        <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm leading-6 text-slate-500">
-            24X7 Customer Support: 0124-6280407
+        <div className="flex flex-col gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-6 text-gray-500">
+            24×7 Customer Support: +91 98765 43210
           </p>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-[14px] bg-[#28536B] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1e3f52] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Sending..." : "Send Message"}
           </button>

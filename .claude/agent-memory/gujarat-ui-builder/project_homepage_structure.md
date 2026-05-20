@@ -1,20 +1,32 @@
 ---
-name: TripNexa Homepage Structure
-description: Component tree and file layout for the TripNexa Gujarat tourism homepage built on 2026-04-01
+name: TripNexa Homepage Structure (v3 Dark Redesign)
+description: Component tree and file layout for the TripNexa home page after 2026-05-19 redesign. 4-section dark-theme layout.
 type: project
 ---
 
-Homepage built with 6 components composing the main page:
+## Home page — `app/page.tsx`
 
-- `components/Navbar.tsx` — sticky top nav with logo, links, CTA button, mobile hamburger
-- `components/HeroSection.tsx` — full-viewport hero with background image, heading, subtitle, two CTA buttons
-- `components/CategoryFilter.tsx` — client component with horizontal scrollable pill chips for filtering
-- `components/DestinationCard.tsx` — reusable card with image zoom on hover, gradient overlay, category badge
-- `components/DestinationsSection.tsx` — grid section rendering 3 DestinationCards from mock data
-- `utils/mockData.ts` — typed mock data (destinations, categories, heroImage)
-- `app/page.tsx` — composes all sections into the homepage
-- `app/globals.css` — Tailwind v4 theme with custom colors (primary, secondary, brand-bg) + scrollbar-hide utility
-- `next.config.ts` — configured with Unsplash remotePatterns for next/image
+Renders four sections via `components/Layout` (Navbar + Footer wrapper):
 
-**Why:** Initial homepage build for the TripNexa Gujarat tourism platform.
-**How to apply:** Use these components as the foundation. Extend with more sections (Featured, Footer, etc.) as needed.
+1. `app/_components/HeroSection.tsx` — split layout (60/40): two overlapping images left, tag + headline + description + CTAs right
+2. `app/_components/DestinationsHomeSection.tsx` — 3-card grid (Rann, Gir, Somnath) with tall aspect-[3/4] images, static data
+3. `app/_components/PackagesSection.tsx` — 4-card grid (Heritage Ahmedabad, Gir Safari, Rann Utsav, Dwarka Pilgrimage), static data
+4. `app/_components/HotelsSection.tsx` — 5-card grid (Taj Ummed, Gir Forest Lodge, Tent City, Radhika Beach, Rann Riders), static data
+
+## Navigation — `components/Navbar.tsx`
+
+Links: Home `/`, Destinations `/destinations`, Hotels `/hotels`, Car Rentals `/car-rentals`
+Active link detection via `usePathname`. Mobile hamburger toggles mobile menu state.
+Logo is text-based: "Trip" (white) + "Nexa" (orange gradient).
+
+## New pages added 2026-05-19
+
+- `app/hotels/page.tsx` — Coming Soon page (full-screen centered, heading, badge, back link)
+- `app/car-rentals/page.tsx` — Coming Soon page (same pattern)
+
+## next.config.ts — remotePatterns
+
+Includes both `trytripnexa-images.s3.amazonaws.com` and `images.unsplash.com` for next/image.
+
+**Why:** Full home page redesign with dark zinc/orange aesthetic. New nav links added for Hotels and Car Rentals sections.
+**How to apply:** All four `app/_components/` files together compose the home page. Keep static data in the component files themselves (no external service calls for these home sections).

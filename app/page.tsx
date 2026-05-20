@@ -1,22 +1,16 @@
-
 import Layout from "@/components/Layout";
-import HeroSection from "../components/HeroSection";
-import DestinationsSection from "@/components/DestinationsSection";
-import { SkeletonTheme } from "react-loading-skeleton";
-
+import HeroSection from "@/app/_components/HeroSection";
+import DestinationsHomeSection from "@/app/_components/DestinationsHomeSection";
+import PackagesSection from "@/app/_components/PackagesSection";
+import HotelsSection from "@/app/_components/HotelsSection";
 
 export default function Home() {
-
-    return (
-        <main className="min-h-screen bg-brand-bg">
-            <SkeletonTheme highlightColor="#1e3f52" duration={2}>
-                <Layout>
-                    <HeroSection />
-                    <DestinationsSection />
-                </Layout>
-            </SkeletonTheme>
-        </main>
-    )
+  return (
+    <Layout>
+      <HeroSection />
+      <DestinationsHomeSection />
+      <PackagesSection />
+      <HotelsSection />
+    </Layout>
+  );
 }
-
-

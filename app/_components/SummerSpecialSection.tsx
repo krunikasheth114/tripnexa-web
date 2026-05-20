@@ -41,8 +41,8 @@ const summerDestinations: SummerDestination[] = [
 
 export default function SummerSpecialSection() {
   return (
-    <section className="relative overflow-hidden bg-[#121316] px-6 py-16 md:py-20">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(40,83,107,0.35),transparent_55%)]" />
+    <section className="relative overflow-hidden bg-gray-900 px-6 py-16 md:py-20">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.18),transparent_55%)]" />
       <div className="relative mx-auto max-w-7xl">
         <h2 className="text-center text-3xl font-bold text-white md:text-5xl">
           Summer special holiday destination
@@ -53,7 +53,7 @@ export default function SummerSpecialSection() {
             {summerDestinations.map((destination) => (
               <article
                 key={destination.id}
-                className="w-[170px] shrink-0 rounded-[24px] border border-white/20 bg-[#0C0D10] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-1"
+                className="w-[170px] shrink-0 rounded-[24px] border border-white/10 bg-white/5 p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-1"
               >
                 <div className="relative h-[150px] overflow-hidden rounded-[16px] border border-white/10">
                   <Image

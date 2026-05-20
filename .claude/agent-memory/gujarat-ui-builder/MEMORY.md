@@ -1,2 +1,3 @@
-- [Homepage Structure](project_homepage_structure.md) — Component tree and file layout for the TripNexa homepage
+- [Homepage Structure](project_homepage_structure.md) — 4-section dark home page layout after 2026-05-19 redesign; new hotels/car-rentals pages added
 - [About Page Structure](project_about_page.md) — Section layout, design decisions, and file location for app/about/page.tsx
+- [Design System v3](project_design_system.md) — v3 dark zinc+orange system for new pages; v2 teal palette still used by existing destinations/about/contact
