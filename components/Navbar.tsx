@@ -25,6 +25,7 @@ export default function Navbar() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((s) => s.auth);
 
+  const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileDestOpen, setMobileDestOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function Navbar() {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     fetchNavDestinations().then(setDestinations);
   }, []);
 
@@ -149,7 +151,7 @@ export default function Navbar() {
             Plan a Trip
           </Link>
 
-          {isAuthenticated && user && (
+          {mounted && isAuthenticated && user && (
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setUserMenuOpen((prev) => !prev)}
@@ -263,7 +265,7 @@ export default function Navbar() {
               </Link>
             )
           )}
-          {isAuthenticated && user ? (
+          {mounted && isAuthenticated && user ? (
             <div className="mt-3 border-t border-gray-100 pt-3">
               <div className="flex items-center gap-3 px-4 py-2">
                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0">

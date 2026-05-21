@@ -6,7 +6,9 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { LoginModal } from "@/app/_components/LoginModal";
+import { PaymentModal } from "@/app/_components/PaymentModal";
 import { useAppSelector } from "@/hooks/useAppDispatch";
+import { createBookingApi } from "@/services/booking";
 import type { ApiPackage } from "@/services/destinations";
 
 // ── Mirrors admin OPTION_GROUPS + FLAT_OPTIONS ─────────────────
@@ -95,8 +97,15 @@ interface BookingReviewProps {
 }
 
 export default function BookingReview({ packageDetails, destinationId }: BookingReviewProps) {
-  const { isAuthenticated } = useAppSelector((s) => s.auth);
+  const { isAuthenticated, user } = useAppSelector((s) => s.auth);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  // Payment modal state
+  const [paymentOpen, setPaymentOpen]           = useState(false);
+  const [clientSecret, setClientSecret]         = useState("");
+  const [bookingNumber, setBookingNumber]       = useState("");
+  const [bookingLoading, setBookingLoading]     = useState(false);
+  const [bookingError, setBookingError]         = useState("");
 
   const [guestCount, setGuestCount] = useState(2);
   const [fromState, setFromState] = useState("");
@@ -105,13 +114,54 @@ export default function BookingReview({ packageDetails, destinationId }: Booking
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
 
-  function handleConfirmBook() {
-    if (!isAuthenticated) {
+  // Primary guest details
+  const [guestName, setGuestName]             = useState("");
+  const [guestEmail, setGuestEmail]           = useState("");
+  const [guestPhone, setGuestPhone]           = useState("");
+  const [guestAge, setGuestAge]               = useState("");
+  const [guestGender, setGuestGender]         = useState<"MALE"|"FEMALE"|"OTHER"|"">("");
+  const [guestNationality, setGuestNationality] = useState("");
+
+  async function handleConfirmBook() {
+    if (!isAuthenticated || !user) {
       setLoginModalOpen(true);
       return;
     }
-    // TODO: proceed with booking flow
-    alert("Booking confirmed! (integration pending)");
+
+    // Validate required guest fields
+    if (!guestName.trim()) { setBookingError("Please enter the lead guest's full name."); return; }
+    if (!guestEmail.trim()) { setBookingError("Please enter the lead guest's email."); return; }
+
+    try {
+      setBookingLoading(true);
+      setBookingError("");
+
+      const nameParts = guestName.trim().split(" ");
+
+      const result = await createBookingApi({
+        packageId: packageDetails.id,
+        travelDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        totalGuests: guestCount,
+        guests: [{
+          firstName:   nameParts[0],
+          lastName:    nameParts.slice(1).join(" ") || undefined,
+          email:       guestEmail.trim(),
+          phone:       guestPhone.trim() || undefined,
+          age:         guestAge ? Number(guestAge) : undefined,
+          gender:      guestGender || undefined,
+          nationality: guestNationality.trim() || undefined,
+        }],
+        fromState: fromState || undefined,
+      });
+
+      setBookingNumber(result.bookingNumber);
+      setClientSecret(result.clientSecret);
+      setPaymentOpen(true);
+    } catch (err) {
+      setBookingError(err instanceof Error ? err.message : "Failed to create booking");
+    } finally {
+      setBookingLoading(false);
+    }
   }
 
   const basePrice = packageDetails.discountPrice ?? packageDetails.price;
@@ -340,23 +390,77 @@ export default function BookingReview({ packageDetails, destinationId }: Booking
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-gray-900">Full Name *</label>
-                  <input type="text" placeholder="Enter your full name"
-                    className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors" />
+                  <input
+                    type="text"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-gray-900">Email Address *</label>
-                  <input type="email" placeholder="you@example.com"
-                    className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors" />
+                  <input
+                    type="email"
+                    value={guestEmail}
+                    onChange={(e) => setGuestEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                  />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-900">Phone Number *</label>
+                  <label className="text-sm font-medium text-gray-900">Phone Number</label>
                   <div className="flex h-11 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-colors">
                     <div className="flex items-center gap-2 border-r border-gray-200 px-3">
                       <span className="text-sm font-semibold text-gray-900">+91</span>
                     </div>
-                    <input type="tel" placeholder="98765 43210"
-                      className="flex-1 bg-transparent px-3 text-sm text-gray-900 placeholder-gray-400 outline-none" />
+                    <input
+                      type="tel"
+                      value={guestPhone}
+                      onChange={(e) => setGuestPhone(e.target.value)}
+                      placeholder="98765 43210"
+                      className="flex-1 bg-transparent px-3 text-sm text-gray-900 placeholder-gray-400 outline-none"
+                    />
                   </div>
+                </div>
+                {/* Age + Gender row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-gray-900">Age</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={120}
+                      value={guestAge}
+                      onChange={(e) => setGuestAge(e.target.value)}
+                      placeholder="e.g. 28"
+                      className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-gray-900">Gender</label>
+                    <select
+                      value={guestGender}
+                      onChange={(e) => setGuestGender(e.target.value as "MALE" | "FEMALE" | "OTHER" | "")}
+                      className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                    >
+                      <option value="">Select</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+                </div>
+                {/* Nationality */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-gray-900">Nationality</label>
+                  <input
+                    type="text"
+                    value={guestNationality}
+                    onChange={(e) => setGuestNationality(e.target.value)}
+                    placeholder="e.g. Indian"
+                    className="w-full h-11 rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-colors"
+                  />
                 </div>
                 {/* From State */}
                 <div className="space-y-1.5">
@@ -490,13 +594,32 @@ export default function BookingReview({ packageDetails, destinationId }: Booking
             </div>
             {couponApplied && <p className="text-xs text-emerald-600 font-medium -mt-3">Coupon applied! ₹500 off</p>}
 
+            {/* Booking error */}
+            {bookingError && (
+              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                {bookingError}
+              </div>
+            )}
+
             {/* Confirm */}
-            <button type="button" disabled={!termsAgreed} onClick={handleConfirmBook}
+            <button type="button" disabled={!termsAgreed || bookingLoading} onClick={handleConfirmBook}
               className="w-full h-[52px] flex items-center justify-center gap-2.5 rounded-xl bg-orange-500 text-base font-semibold text-white transition-colors hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              Confirm &amp; Book Now
+              {bookingLoading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Creating Booking…
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  Confirm &amp; Book Now
+                </>
+              )}
             </button>
             {!termsAgreed && (
               <p className="text-xs text-gray-400 text-center -mt-3">
@@ -508,7 +631,7 @@ export default function BookingReview({ packageDetails, destinationId }: Booking
               <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              <span className="text-xs text-gray-400">Secure payment powered by Razorpay</span>
+              <span className="text-xs text-gray-400">Secure payment powered by Stripe</span>
             </div>
           </div>
         </div>
@@ -520,6 +643,15 @@ export default function BookingReview({ packageDetails, destinationId }: Booking
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
         onSuccess={() => setLoginModalOpen(false)}
+      />
+
+      <PaymentModal
+        open={paymentOpen}
+        onClose={() => setPaymentOpen(false)}
+        clientSecret={clientSecret}
+        bookingNumber={bookingNumber}
+        totalAmount={pricing.total}
+        packageTitle={packageDetails.title}
       />
     </main>
   );

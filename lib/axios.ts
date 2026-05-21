@@ -10,6 +10,13 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
+    // Attach JWT token from localStorage if present
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('tn_access_token');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   (error) => Promise.reject(error)

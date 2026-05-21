@@ -23,7 +23,8 @@
       "Bash(npx shadcn@latest add table sheet dialog select textarea sonner --yes)",
       "Bash(node -e \"require\\('./node_modules/xlsx'\\); console.log\\('found'\\);\")",
       "Bash(node -e \"const xlsx = require\\('./node_modules/xlsx'\\); console.log\\(Object.keys\\(xlsx\\).slice\\(0,5\\)\\);\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(xargs grep -l -i \"image\")"
     ]
   }
 }

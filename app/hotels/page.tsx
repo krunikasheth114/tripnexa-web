@@ -1,56 +1,85 @@
-import Link from "next/link";
-import Layout from "@/components/Layout";
+import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { fetchHotels } from "@/services/hotels";
+import { fetchDestinations } from "@/services/destinations";
+import { Suspense } from "react";
+import HotelsListClient from "./_components/HotelsListClient";
 
-export default function HotelsPage() {
+export const metadata: Metadata = {
+  title: "Hotels in Gujarat – TripNexa",
+  description:
+    "Browse handpicked hotels, resorts, and heritage stays across Gujarat. Filter by destination, star rating, and price.",
+};
+
+export default async function HotelsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+
+  const params = {
+    destinationId: sp.destinationId ? Number(sp.destinationId) : undefined,
+    starRating: sp.starRating ? Number(sp.starRating) : undefined,
+    minPrice: sp.minPrice ? Number(sp.minPrice) : undefined,
+    maxPrice: sp.maxPrice ? Number(sp.maxPrice) : undefined,
+    page: 1,
+    limit: 9,
+  };
+
+  // Fetch initial data + destinations in parallel
+  // fetchDestinations may return a paginated object or flat array depending on backend
+  const [result, rawDestinations] = await Promise.all([
+    fetchHotels(params),
+    fetchDestinations(),
+  ]);
+
+  // Safely unwrap — if backend returned {data:[], total} instead of []
+  const destinations = Array.isArray(rawDestinations)
+    ? rawDestinations
+    : ((rawDestinations as unknown as { data: typeof rawDestinations })?.data ?? []);
+
   return (
-    <Layout>
-      <main className="bg-zinc-950 min-h-screen flex items-center justify-center px-6 py-20">
-        <div className="max-w-lg mx-auto text-center flex flex-col items-center gap-6">
-          {/* Coming Soon badge */}
-          <span className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-[8px]">
-            Coming Soon
-          </span>
+    <main className="min-h-screen bg-gray-50">
+      <Navbar />
 
-          {/* Heading */}
-          <h1 className="font-[family-name:var(--font-playfair)] font-bold text-white text-4xl md:text-6xl leading-tight tracking-tight">
-            Hotels
+      {/* Hero banner */}
+      <div className="bg-white border-b border-gray-100 px-6 py-12">
+        <div className="max-w-7xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-500 mb-2">
+            Where to Stay
+          </p>
+          <h1 className="font-[family-name:var(--font-playfair)] font-bold text-gray-900 text-4xl md:text-5xl">
+            Hotels across Gujarat
           </h1>
-
-          {/* Subheading */}
-          <p className="text-zinc-400 text-lg leading-relaxed">
-            We&apos;re curating the best stays across Gujarat
+          <p className="mt-3 text-gray-500 text-base max-w-xl">
+            From luxury retreats to heritage boutiques — find the perfect stay for your trip.
           </p>
-
-          {/* Description */}
-          <p className="text-zinc-500 text-base leading-relaxed max-w-sm">
-            Handpicked hotels, resorts, and heritage stays — from luxury
-            properties to boutique escapes. Launching soon.
-          </p>
-
-          {/* Divider */}
-          <div className="w-16 h-px bg-white/10" />
-
-          {/* Back to Home */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 border border-white/15 text-white px-6 py-3 rounded-[8px] font-semibold hover:bg-white/5 transition-colors duration-200 text-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-4 h-4"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            Back to Home
-          </Link>
         </div>
-      </main>
-    </Layout>
+      </div>
+
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-24">
+            <svg className="animate-spin h-8 w-8 text-orange-400" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+          </div>
+        }>
+          <HotelsListClient
+            initialHotels={result.data}
+            initialTotal={result.total}
+            initialHasMore={result.hasMore}
+            destinations={destinations.map((d) => ({ id: d.id, name: d.name }))}
+            initialFilters={params}
+          />
+        </Suspense>
+      </div>
+
+      <Footer />
+    </main>
   );
 }

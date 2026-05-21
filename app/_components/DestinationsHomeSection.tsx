@@ -1,39 +1,72 @@
 import Image from "next/image";
 import Link from "next/link";
+import apiClient from "@/lib/axios";
 
-interface DestinationCard {
+interface ApiDestinationHome {
+  id: number;
   name: string;
-  tagline: string;
-  image: string;
-  badge: string;
-  href: string;
+  slug: string;
+  type: string | null;
+  description: string | null;
+  gallery: { url: string }[];
 }
 
-const DESTINATIONS: DestinationCard[] = [
+interface PaginatedApiResponse {
+  status: string;
+  statusCode: number;
+  data: {
+    data: ApiDestinationHome[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+  };
+}
+
+async function fetchHomepageDestinations(): Promise<ApiDestinationHome[]> {
+  try {
+    const response = await apiClient.get<PaginatedApiResponse>(
+      "/web/destinations/list",
+      { params: { limit: 3 } }
+    );
+    return response.data.data?.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+// Fallback static data when API has no destinations yet
+const FALLBACK_DESTINATIONS: ApiDestinationHome[] = [
   {
+    id: 0,
     name: "Rann of Kutch",
-    tagline: "White salt desert under an endless sky",
-    image: "https://images.unsplash.com/photo-1582972236019-ea4af5ffe587?w=600",
-    badge: "Desert",
-    href: "/destinations",
+    slug: "rann-of-kutch",
+    type: "DESERT",
+    description: "White salt desert under an endless sky",
+    gallery: [{ url: "https://images.unsplash.com/photo-1582972236019-ea4af5ffe587?w=600" }],
   },
   {
+    id: 0,
     name: "Gir National Park",
-    tagline: "Home of the last Asiatic lions on earth",
-    image: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=600",
-    badge: "Wildlife",
-    href: "/destinations",
+    slug: "gir",
+    type: "WILDLIFE",
+    description: "Home of the last Asiatic lions on earth",
+    gallery: [{ url: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=600" }],
   },
   {
+    id: 0,
     name: "Somnath",
-    tagline: "Sacred shores and ancient temple glory",
-    image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600",
-    badge: "Pilgrimage",
-    href: "/destinations",
+    slug: "somnath",
+    type: "RELIGIOUS",
+    description: "Sacred shores and ancient temple glory",
+    gallery: [{ url: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600" }],
   },
 ];
 
-export default function DestinationsHomeSection() {
+export default async function DestinationsHomeSection() {
+  const apiDestinations = await fetchHomepageDestinations();
+  const destinations = (apiDestinations.length > 0 ? apiDestinations : FALLBACK_DESTINATIONS).slice(0, 3);
+
   return (
     <section className="bg-gray-50 px-6 py-20 md:py-24">
       <div className="max-w-7xl mx-auto">
@@ -57,38 +90,58 @@ export default function DestinationsHomeSection() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {DESTINATIONS.map((dest) => (
-            <Link
-              key={dest.name}
-              href={dest.href}
-              className="group block relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-300"
-            >
-              <Image
-                src={dest.image}
-                alt={dest.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-              {/* Gradient overlay — always dark so text is readable */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent group-hover:from-black/85 transition-all duration-300" />
+          {destinations.map((dest) => {
+            const imageUrl = dest.gallery?.[0]?.url ?? null;
+            // If real API destination: link to /destinations/[id] (shows packages for that destination)
+            // If fallback (id=0): link to /destinations listing
+            const href = dest.id > 0 ? `/destinations/${dest.id}` : "/destinations";
 
-              {/* Badge */}
-              <span className="absolute top-4 left-4 bg-orange-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">
-                {dest.badge}
-              </span>
+            return (
+              <Link
+                key={dest.id > 0 ? dest.id : dest.name}
+                href={href}
+                className="group block relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-300"
+              >
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={dest.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-100 flex items-center justify-center">
+                    <svg className="w-16 h-16 text-orange-200" fill="none" stroke="currentColor" strokeWidth={1.2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                )}
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent group-hover:from-black/85 transition-all duration-300" />
 
-              {/* Text */}
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="font-[family-name:var(--font-playfair)] font-bold text-white text-2xl leading-tight">
-                  {dest.name}
-                </h3>
-                <p className="text-white/80 text-sm mt-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {dest.tagline}
-                </p>
-              </div>
-            </Link>
-          ))}
+                {/* Badge */}
+                {dest.type && (
+                  <span className="absolute top-4 left-4 bg-orange-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm capitalize">
+                    {dest.type.charAt(0) + dest.type.slice(1).toLowerCase()}
+                  </span>
+                )}
+
+                {/* Text */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-[family-name:var(--font-playfair)] font-bold text-white text-2xl leading-tight">
+                    {dest.name}
+                  </h3>
+                  {dest.description && (
+                    <p className="text-white/80 text-sm mt-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {dest.description}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         {/* Explore more CTA */}

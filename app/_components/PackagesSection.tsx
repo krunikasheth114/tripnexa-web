@@ -64,7 +64,7 @@ function PackageCard({ pkg }: { pkg: FeaturedPackage }) {
             </div>
           </div>
           <Link
-            href={pkg.destination ? `/destinations/${pkg.destination.id}` : "/destinations"}
+            href={`/packages/${pkg.id}`}
             className="bg-orange-500 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200"
           >
             Book Now

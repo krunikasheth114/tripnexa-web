@@ -116,6 +116,7 @@ export interface FeaturedPackage {
     featured: boolean;
     gallery: { id: number; url: string; position: number }[];
     destination: { id: number; name: string; slug: string; type: string } | null;
+    itineraries?: { id: number; dayNumber: number }[];
 }
 
 export async function fetchFeaturedPackages(): Promise<FeaturedPackage[]> {
@@ -142,13 +143,70 @@ export async function fetchNavDestinations(): Promise<NavDestination[]> {
 
 export async function fetchDestinations(): Promise<ApiDestination[]> {
     try {
-        const response = await apiClient.get<ApiResponse<ApiDestination[]>>(
-            "/destinations"
+        // limit=-1 returns a flat array instead of paginated object
+        const response = await apiClient.get<ApiResponse<ApiDestination[] | { data: ApiDestination[] }>>(
+            "/destinations",
+            { params: { limit: -1 } }
         );
-
-        return response.data.data;
+        const payload = response.data.data;
+        // Guard: backend may return paginated shape {data:[], total} or flat []
+        if (Array.isArray(payload)) return payload;
+        return (payload as { data: ApiDestination[] }).data ?? [];
     } catch {
         return [];
+    }
+}
+
+// ── Destination types (for filter dropdown) ────────────────────────────────
+export const DESTINATION_TYPES = [
+    "WILDLIFE",
+    "HERITAGE",
+    "RELIGIOUS",
+    "BEACH",
+    "ADVENTURE",
+    "CULTURAL",
+    "CITY",
+    "REGION",
+] as const;
+
+export type DestinationType = (typeof DESTINATION_TYPES)[number];
+
+export interface DestinationListItem {
+    id: number;
+    name: string;
+    slug: string;
+    type: string | null;
+    description: string | null;
+    gallery: { url: string }[];
+    _count: { packages: number };
+}
+
+export interface DestinationsPaginatedResponse {
+    data: DestinationListItem[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+}
+
+export interface FetchDestinationsListParams {
+    type?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+}
+
+export async function fetchDestinationsList(
+    params?: FetchDestinationsListParams
+): Promise<DestinationsPaginatedResponse> {
+    try {
+        const response = await apiClient.get<ApiResponse<DestinationsPaginatedResponse>>(
+            "/web/destinations/list",
+            { params }
+        );
+        return response.data.data;
+    } catch {
+        return { data: [], total: 0, page: 1, limit: 12, hasMore: false };
     }
 }
 

@@ -27,7 +27,8 @@ export default async function DestinationDetailsPage(
     const destInfo = packages[0].destination;
     // Hero image: first gallery item across all packages that has one
     const heroImage =
-        packages.find((p) => p.gallery?.[0]?.url)?.gallery[0]?.url ?? "";
+        packages.find((p) => p.gallery?.[0]?.url)?.gallery[0]?.url
+        ?? "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1400&auto=format&fit=crop";
 
     const destination = {
         id: destInfo?.id,

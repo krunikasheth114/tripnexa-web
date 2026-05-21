@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
 import type { ApiPackage } from "@/services/destinations";
 import ItineraryTabs from "./ItineraryTabs";
 
@@ -84,7 +87,13 @@ interface PackageItineraryDetailsProps {
 
 export default function PackageItineraryDetails({ packageDetails }: PackageItineraryDetailsProps) {
     const itineraryDays = packageDetails.itineraries ?? [];
-    const heroImage = packageDetails.gallery?.[0]?.url ?? null;
+    const DUMMY_IMAGES = [
+        { id: -1, url: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&auto=format&fit=crop", position: 0 },
+        { id: -2, url: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=800&auto=format&fit=crop", position: 1 },
+        { id: -3, url: "https://images.unsplash.com/photo-1609766857044-a5b38eea8f94?w=800&auto=format&fit=crop", position: 2 },
+    ];
+    const allImages = (packageDetails.gallery ?? []).length > 0 ? packageDetails.gallery ?? [] : DUMMY_IMAGES;
+    const heroImage = allImages[0]?.url ?? null;
     const price = packageDetails.discountPrice ?? packageDetails.price;
     const hasDiscount =
         packageDetails.discountPrice !== null &&
@@ -96,38 +105,277 @@ export default function PackageItineraryDetails({ packageDetails }: PackageItine
     const inclChips = chips.filter((c) => c.included);
     const exclChips = chips.filter((c) => !c.included);
 
+    // ── Lightbox state ──────────────────────────────────────────────
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+
+    const openLightbox = useCallback((index: number) => {
+        setLightboxIndex(index);
+        setLightboxOpen(true);
+    }, []);
+
+    const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+
+    const prevImage = useCallback(() => {
+        setLightboxIndex((i) => (i - 1 + allImages.length) % allImages.length);
+    }, [allImages.length]);
+
+    const nextImage = useCallback(() => {
+        setLightboxIndex((i) => (i + 1) % allImages.length);
+    }, [allImages.length]);
+
+    useEffect(() => {
+        if (!lightboxOpen) return;
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") closeLightbox();
+            if (e.key === "ArrowLeft") prevImage();
+            if (e.key === "ArrowRight") nextImage();
+        };
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [lightboxOpen, closeLightbox, prevImage, nextImage]);
+
     return (
         <div className="bg-white">
-            {/* Hero */}
-            <section className="relative h-[400px] md:h-[500px] overflow-hidden bg-gray-900">
-                {heroImage && (
-                    <Image
-                        src={heroImage}
-                        alt={packageDetails.title}
-                        fill
-                        priority
-                        sizes="100vw"
-                        className="object-cover"
-                    />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/80" />
-                <div className="relative mx-auto flex h-full max-w-7xl flex-col items-start justify-end px-6 pb-14 gap-3">
-                    <Link
-                        href={`/destinations/${packageDetails.destinationId}`}
-                        className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-300 transition hover:text-white"
+            {/* ── Hero: text row + mosaic ────────────────────────────── */}
+            {allImages.length === 0 ? (
+                /* Fallback: dark hero when no gallery images exist */
+                <section className="relative h-[400px] md:h-[500px] overflow-hidden bg-gray-900">
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/80" />
+                    <div className="relative mx-auto flex h-full max-w-7xl flex-col items-start justify-end px-6 pb-14 gap-3">
+                        <Link
+                            href={`/destinations/${packageDetails.destinationId}`}
+                            className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-300 transition hover:text-white"
+                        >
+                            ← Back to destination
+                        </Link>
+                        <h1 className="max-w-3xl text-3xl font-[family-name:var(--font-playfair)] font-bold text-white md:text-5xl">
+                            {packageDetails.title}
+                        </h1>
+                        {packageDetails.description && (
+                            <p className="max-w-2xl text-base leading-relaxed text-white/80 md:text-lg">
+                                {packageDetails.description}
+                            </p>
+                        )}
+                    </div>
+                </section>
+            ) : (
+                <>
+                    {/* Text row above mosaic */}
+                    <div className="max-w-7xl mx-auto px-6 pt-10 pb-4">
+                        <Link
+                            href={`/destinations/${packageDetails.destinationId}`}
+                            className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-500 transition hover:text-orange-700"
+                        >
+                            ← Back to destination
+                        </Link>
+                        <h1 className="mt-3 max-w-3xl text-3xl font-[family-name:var(--font-playfair)] font-bold text-gray-900 md:text-5xl">
+                            {packageDetails.title}
+                        </h1>
+                        {packageDetails.description && (
+                            <p className="mt-2 max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
+                                {packageDetails.description}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Mosaic grid */}
+                    <div className="max-w-7xl mx-auto px-6 pb-10">
+                        <div className="relative h-[420px] md:h-[500px] rounded-2xl overflow-hidden">
+                            {allImages.length === 1 && (
+                                /* Single image: full width */
+                                <button
+                                    type="button"
+                                    onClick={() => openLightbox(0)}
+                                    className="group relative block w-full h-full rounded-2xl overflow-hidden"
+                                    aria-label="Open photo gallery"
+                                >
+                                    <Image
+                                        src={allImages[0].url}
+                                        alt={`${packageDetails.title} — photo 1`}
+                                        fill
+                                        priority
+                                        sizes="(max-width: 1280px) 100vw, 1280px"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                </button>
+                            )}
+
+                            {allImages.length === 2 && (
+                                /* Two images: equal columns */
+                                <div className="flex gap-2 h-full">
+                                    {allImages.slice(0, 2).map((img, idx) => (
+                                        <button
+                                            key={img.id}
+                                            type="button"
+                                            onClick={() => openLightbox(idx)}
+                                            className="group relative flex-1 overflow-hidden rounded-2xl"
+                                            aria-label={`Open photo ${idx + 1}`}
+                                        >
+                                            <Image
+                                                src={img.url}
+                                                alt={`${packageDetails.title} — photo ${idx + 1}`}
+                                                fill
+                                                priority={idx === 0}
+                                                sizes="(max-width: 1280px) 50vw, 640px"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {allImages.length >= 3 && (
+                                /* Three or more: 2/3 left + 1/3 right stacked */
+                                <div className="flex gap-2 h-full">
+                                    {/* Main left image */}
+                                    <button
+                                        type="button"
+                                        onClick={() => openLightbox(0)}
+                                        className="group relative overflow-hidden rounded-tl-2xl rounded-bl-2xl"
+                                        style={{ flex: "2 1 0%" }}
+                                        aria-label="Open photo 1"
+                                    >
+                                        <Image
+                                            src={allImages[0].url}
+                                            alt={`${packageDetails.title} — photo 1`}
+                                            fill
+                                            priority
+                                            sizes="(max-width: 1280px) 67vw, 853px"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </button>
+
+                                    {/* Right column: two stacked images */}
+                                    <div className="flex flex-col gap-2" style={{ flex: "1 1 0%" }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => openLightbox(1)}
+                                            className="group relative flex-1 overflow-hidden rounded-tr-2xl"
+                                            aria-label="Open photo 2"
+                                        >
+                                            <Image
+                                                src={allImages[1].url}
+                                                alt={`${packageDetails.title} — photo 2`}
+                                                fill
+                                                sizes="(max-width: 1280px) 33vw, 427px"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => openLightbox(2)}
+                                            className="group relative flex-1 overflow-hidden rounded-br-2xl"
+                                            aria-label="Open photo 3"
+                                        >
+                                            <Image
+                                                src={allImages[2].url}
+                                                alt={`${packageDetails.title} — photo 3`}
+                                                fill
+                                                sizes="(max-width: 1280px) 33vw, 427px"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* "View all photos" pill button */}
+                            <button
+                                type="button"
+                                onClick={() => openLightbox(0)}
+                                className="absolute bottom-4 right-4 flex items-center gap-2 rounded-[8px] bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-md transition-shadow hover:shadow-lg"
+                                aria-label={`View all ${allImages.length} photos`}
+                            >
+                                {/* Camera icon (inline SVG — no extra package) */}
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                View all {allImages.length} photos
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ── Lightbox ───────────────────────────────────────────── */}
+            {lightboxOpen && allImages.length > 0 && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Photo gallery lightbox"
+                >
+                    {/* Close button */}
+                    <button
+                        type="button"
+                        onClick={closeLightbox}
+                        className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-[8px] bg-white/10 text-white transition-colors hover:bg-white/20"
+                        aria-label="Close gallery"
                     >
-                        ← Back to destination
-                    </Link>
-                    <h1 className="max-w-3xl text-3xl font-[family-name:var(--font-playfair)] font-bold text-white md:text-5xl">
-                        {packageDetails.title}
-                    </h1>
-                    {packageDetails.description && (
-                        <p className="max-w-2xl text-base leading-relaxed text-white/80 md:text-lg">
-                            {packageDetails.description}
-                        </p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+
+                    {/* Index indicator */}
+                    <span className="absolute top-5 left-1/2 -translate-x-1/2 text-sm font-semibold text-white/80 tabular-nums">
+                        {lightboxIndex + 1} / {allImages.length}
+                    </span>
+
+                    {/* Previous button */}
+                    {allImages.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={prevImage}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-[8px] bg-white/10 text-white transition-colors hover:bg-white/20"
+                            aria-label="Previous photo"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                        </button>
+                    )}
+
+                    {/* Current image */}
+                    <div className="relative mx-auto h-[80vh] w-full max-w-5xl px-16">
+                        <Image
+                            src={allImages[lightboxIndex].url}
+                            alt={`${packageDetails.title} — photo ${lightboxIndex + 1}`}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 1024px"
+                            className="object-contain"
+                        />
+                    </div>
+
+                    {/* Next button */}
+                    {allImages.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={nextImage}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-[8px] bg-white/10 text-white transition-colors hover:bg-white/20"
+                            aria-label="Next photo"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
                     )}
                 </div>
-            </section>
+            )}
 
             {/* Main content */}
             <section className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1fr_340px]">
